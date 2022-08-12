@@ -1,0 +1,216 @@
+*{
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html,body,.container{
+    width: 100%;
+    height: 100%;
+}
+
+.container{
+    background: url('../../assets/home_bg.png') no-repeat;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.container .header{
+    display: flex;
+    padding: 0.4rem 0 0 0.5rem;
+}
+
+.header .logo{
+    width: 0.48rem;
+    height: 0.48rem;
+}
+
+.operate{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+}
+
+.home-title{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.2rem;
+    width: 100%;
+}
+
+.home-title img{
+    width: 5.02rem;
+    height: 1.05rem;
+}
+
+.home-title .welcome{
+    font-size: 0.16rem;
+    font-weight: 500;
+    line-height: 0.22rem;
+    color: #fff;
+    display: flex;
+    width: 100%;
+    margin-top: 0.12rem;
+}
+
+.welcome span:nth-of-type(1),.welcome span:nth-of-type(5){
+    flex: auto;
+    background: url('../../assets/line_2.png') repeat-x;
+    background-size: contain;
+    background-position: center;
+}
+.welcome span:nth-of-type(5){
+    background: url('../../assets/line_r.png') no-repeat;
+    background-size: contain;
+    background-position: center;
+}
+.welcome span:nth-of-type(2),.welcome span:nth-of-type(3),.welcome span:nth-of-type(4){
+    flex: 0 0 1.3rem;
+    background: url('../../assets/line_center.png') no-repeat;
+    background-size: contain;
+    background-position: center;
+}
+
+.welcome p{
+    margin: 0 0.07rem;
+}
+
+.login-btns{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.login-view{
+    width: 2.8rem;
+    height: 0.95rem;
+    margin-bottom: 0.1rem;
+}
+
+.connect-login{
+    background: url('../../assets/btn_for_wallet.png') no-repeat;
+    background-size: 100% 100%;
+
+}
+.tourists-login{
+    background: url('../../assets/btn_for_tourists.png') no-repeat;
+    background-size: 100% 100%;
+}
+
+.login-view .login-btn{
+    border: none;
+    width: 100%;
+    height: 100%;
+    outline: none;
+    background-color: transparent;
+    cursor: pointer;
+    font-size: 0.18rem;
+    color: #F6F8FF;
+    font-weight: 500;
+}
+.tourists-login .login-btn{
+    color: #050A1B;
+}
+
+.mask{
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(12,12,18,0.6);
+    z-index: 9;
+    transition: background-color 0.2s 0.1s;
+    transform: translateX(0);
+}
+
+.mask_view{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 5rem;
+    height: 2.83rem;
+    background: url('../../assets/mask_view.png') no-repeat;
+    background-size: cover;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0.6rem 0;
+    opacity: 1;
+    transition: opacity 0.2s 0.1s;
+}
+
+.mask_view .close{
+    position: absolute;
+    right: 0.25rem;
+    top: 0.25rem;
+    width: 0.25rem;
+    height: 0.25rem;
+    background: url('../../assets/close.png') no-repeat;
+    background-size: cover;
+    cursor: pointer;
+}
+
+.mask_view .wallect{
+    width: 4rem;
+    height: 0.63rem;
+    background: url('../../assets/wallect_bg.png') no-repeat;
+    background-size: cover;
+    position: relative;
+}
+
+.wallect .wallect_logo{
+    position: absolute;
+    top: 50%;
+    left: 0.6rem;
+    transform: translateY(-50%);
+    width: 0.4rem;
+    height: 0.4rem;
+}
+
+.wallect_text{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    cursor: pointer;
+}
+
+.wallect_text p{
+    font-size: 0.2rem;
+    color: #050A1B;
+    font-weight: 600;
+    line-height: 0.28rem;
+}
+
+.wallect_text span{
+    font-size: 12px;
+    font-weight: 400;
+    color: #050A1B;
+    line-height: 0.17rem;
+}
+
+.hidden_mask{
+    transform: translateX(-100%);
+    background-color: rgba(12,12,18,0);
+}
+
+.hidden_mask .mask_view{
+    opacity: 0;
+}
+
+

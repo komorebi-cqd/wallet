@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="shortcut icon" type="image/x-icon" href="../../assets/logo.png">
+        <script>
+            (function setHtmlRem(doc, win, designWidth) {
+                const html = doc.documentElement;
+                const refreshRem = () => {
+                    const clientWidth = html.clientWidth;
+                    if (clientWidth >= designWidth) {
+                        html.style.fontSize = "100px";
+                        document.body.style.fontSize = "16px";
+                    } else {
+                        html.style.fontSize =
+                            100 * (clientWidth / designWidth) + "px";
+                    }
+                };
+                doc.addEventListener("DOMContentLoaded", refreshRem);
+                window.onresize = () => refreshRem();
+            })(document, window, 750);
+        </script>
+
+        <title>元宇宙</title>
+        <!-- <link rel="stylesheet" href="./index.css" /> -->
+    </head>
+    <body>
+        <div class="container">
+			<header class="header">
+				<img class="logo" src="../../assets/logo.png" alt="" >
+			</header>
+
+            <main class="operate">
+				<div class="home-title">
+					<img src="../../assets/home_title.png" alt="">
+					<div class="welcome">
+						<span></span>
+						<p>歡</p>
+						<span></span>
+						<p>迎</p>
+						<span></span>
+						<p>進</p>
+						<span></span>
+						<p>入</p>
+						<span></span>
+					</div>
+				</div>
+				<div class="login-btns">
+					<div class="login-view connect-login">
+						<button class="login-btn">
+							連接錢包
+						</button>
+					</div>
+					<div class="login-view tourists-login">
+						<button class="login-btn">
+							遊客體驗
+						</button>
+					</div>
+				</div>
+            </main>
+            <div class="mask hidden_mask">
+                <div class="mask_view">
+                    <div class="close"></div>
+                    <div class="wallect">
+                        <img class="wallect_logo" src="../../assets/wallet_logo.png" alt="">
+                        <div class="wallect_text">
+                            <p>MetaMask</p>
+                            <span>使用瀏覽器插件</span>
+                        </div>
+                    </div>
+                    <div class="wallect">
+                        <img class="wallect_logo" src="../../assets/wallet_logo_2.png" alt="">
+                        <div class="wallect_text">
+                            <p>WalletConnect</p>
+                            <span>使用移動錢包</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
