@@ -15,9 +15,7 @@ module.exports = {
     resolve:{
         alias: {
             "@": path.resolve(__dirname,"src"),
-            _: __dirname,
-            "crypto": require.resolve("crypto-browserify"),
-            "stream": require.resolve("stream-browserify")
+            _: __dirname
         }
     },
     module:{

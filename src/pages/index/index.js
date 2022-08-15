@@ -4,35 +4,38 @@ import Web3 from "web3/dist/web3.min.js";
 
 import WalletConnect from "@walletconnect/client";
 import QRCodeModal from "@walletconnect/qrcode-modal";
-import NodeWalletConnect from "@walletconnect/node";
+import { Buffer } from 'buffer';
+window.Buffer = window.Buffer || Buffer;
 
 const noMetamask = "请先下载小狐狸，";
 //下面是正式网地址 和 合约地址
-// const netWords = {
-// 	chainId: "0x38",
-// 	rpcUrls: ["https://bsc-dataseed.binance.org/"],
-// 	chainName: "BSC",
-// 	default: false,
-// 	POT: "0x4c7b04d50e070848e3c7757995a57624563e0245",
-// 	claim: "0x24367DD2a01e866e45eFEEE9cfaf483FD8aD25D2",
-// }
-// const contractAddress = '0x4c7b04d50e070848e3c7757995a57624563e0245'
+const netWords = {
+	chainId: "0x38",
+	rpcUrls: ["https://bsc-dataseed.binance.org/"],
+	chainName: "BSC",
+	default: false,
+	POT: "0x4c7b04d50e070848e3c7757995a57624563e0245",
+	claim: "0x24367DD2a01e866e45eFEEE9cfaf483FD8aD25D2",
+}
+const contractAddress = '0x4c7b04d50e070848e3c7757995a57624563e0245'
 
 //下面是测试网地址 和 合约地址
-const netWords = {
-    chainId: "0x7b",
-    chainName: "Test Chian",
-    claim: "0x096bd91e851d3bd71a98053427da0394a732ab35",
-    default: true,
-    rpcUrls: ["https://testnet-eth.wlblock.io/"],
-    tokens: ["0xf7118ac23fa5e238e96d79a0504d7606effa2624"],
-};
-const contractAddress = "0x63a03409E9cfC5983E30568F384000E3d4dC1357";
+// const netWords = {
+//     chainId: "0x7b",
+//     chainName: "Test Chian",
+//     claim: "0x096bd91e851d3bd71a98053427da0394a732ab35",
+//     default: true,
+//     rpcUrls: ["https://testnet-eth.wlblock.io/"],
+//     tokens: ["0xf7118ac23fa5e238e96d79a0504d7606effa2624"],
+// };
+// const contractAddress = "0x63a03409E9cfC5983E30568F384000E3d4dC1357";
 
 const ethereum = window.ethereum;
 let web3Ex = null;
 let account = "";
 let chainId = "";
+let timer = null;
+let handleWallteChange = null;
 
 //游客连接
 function touristsConnect() {
@@ -71,7 +74,16 @@ async function connect() {
     //获取ETH余额
     const balance = await web3Ex.eth.getBalance(account);
     console.log(balance * 10 ** -18, "账户余额");
-    getPotBalance(account, contractAddress);
+    await getPotBalance(account, contractAddress);
+    timer = setInterval(() => {
+        if (typeof window.startGame === "function") {
+            window.startGame(
+                { id: account, chainId: chainId },
+                showAlert
+            );
+            clearInterval(timer);
+        }
+    }, 500);
     console.log("进入");
 }
 
@@ -82,6 +94,7 @@ function subscribeChain() {
     }
     ethereum.on("accountsChanged", (accounts) => {
         console.log(accounts, "accountsChanged");
+        typeof handleWallteChange === "function" && handleWallteChange('account');
         account = accounts[0];
     });
     ethereum.on("chainIdChanged", (chainId) => {
@@ -89,6 +102,7 @@ function subscribeChain() {
     });
     ethereum.on("chainChanged", (event) => {
         console.log("chainChanged --- event", event);
+        typeof handleWallteChange === "function" && handleWallteChange('chainId');
         // typeof window.exitGame === "function" && window.exitGame();
         if (netWords.chainId !== event) {
             typeof window.exitGame === "function" && window.exitGame();
@@ -150,144 +164,34 @@ function showOrHiddleView(is) {
     }
 }
 
-
-
 //下面是移动钱包的连接
 //移动钱包连接
 async function walletConnect() {
-    const walletConnector = new NodeWalletConnect({
+    const connector = new WalletConnect({
         bridge: "https://bridge.walletconnect.org", // Required
-    }, {
-        clientMeta: {
-            description: "WalletConnect NodeJS Client",
-            url: "https://nodejs.org/en/",
-            icons: ["https://nodejs.org/static/images/logo.svg"],
-            name: "WalletConnect",
-        },
+        qrcodeModal: QRCodeModal,
     });
-    // Check if connection is already established
-    if (!walletConnector.connected) {
+    if (!connector.connected) {
         // create new session
-        walletConnector.createSession().then(() => {
-            // get uri for QR Code modal
-            const uri = walletConnector.uri;
-            // display QR Code modal
-            WalletConnectQRCodeModal.open(
-                uri,
-                () => {
-                    console.log("QR Code Modal closed");
-                },
-                true // isNode = true
-            );
-            console.log('disconnect!');
-            localStorage.clear();
-        });
+        try {
+            await connector.createSession();
+        } catch (error) {
+            console.log(error);
+        }
+        
     }
-
-    // Subscribe to connection events
-    walletConnector.on("connect", (error, payload) => {
+    connector.on("connect", (error, payload) => {
         if (error) {
             throw error;
         }
-        // Close QR Code Modal
-        WalletConnectQRCodeModal.close(
-            true // isNode = true
-        );
-
         // Get provided accounts and chainId
-        const {accounts, chainId} = payload.params[0];
-        console.log(chainId, 'payload.params')
-        if (chainId != 56) {
-            localStorage.removeItem("walletconnect")
-            console.log('please use Binance Smart Chain!');
-        }
-        //  console.log(accounts, "accounts");
-        let myeth = accounts[0];
-        let wallet = myeth.slice(0, 6) + "..." + myeth.slice(-4)
-        // Store.commit('set_address', myeth)
-        // Store.commit('set_wallet', wallet)
-        // Store.commit('set_address', myeth)
-        sessionStorage.setItem("address",myeth)
+        const { accounts, chainId } = payload.params[0];
+        console.log(accounts, chainId);
     });
-
-    walletConnector.on("session_update", (error, payload) => {
-        if (error) {
-            throw error;
-        }
-        // Get updated accounts and chainId
-        const {accounts, chainId} = payload.params[0];
-    });
-    walletConnector.on("disconnect", (error, payload) => {
-        if (error) {
-            throw error;
-        }
-        // Delete walletConnector
-    });
-
 }
 
+// //移动钱包事件监听用例 https://test.walletconnect.org/ 
 
-// //移动钱包事件监听
-// async function subscribeToEvents(connector) {
-//     if (!connector) {
-//         return;
-//     }
-
-//     connector.on("session_update", async (error, payload) => {
-//         console.log(`connector.on("session_update")`);
-//         if (error) {
-//             console.log(error,'error');
-//             throw error;
-//         }
-//         const { chainId, accounts } = payload.params[0];
-//         console.log(payload);
-//         onSessionUpdate(accounts, chainId);
-//     });
-
-//     connector.on("connect", (error, payload) => {
-//         console.log(`connector.on("connect")`);
-
-//         if (error) {
-//             throw error;
-//         }
-//         onConnect(payload);
-//     });
-
-//     connector.on("disconnect", (error, payload) => {
-//         console.log(`connector.on("disconnect")`);
-  
-//         if (error) {
-//           throw error;
-//         }
-  
-//         onDisconnect();
-//       });
-
-//       if (connector.connected) {
-//         const { chainId, accounts } = connector;
-//         const address = accounts[0];
-//         // this.setState({
-//         //   connected: true,
-//         //   chainId,
-//         //   accounts,
-//         //   address,
-//         // });
-//         onSessionUpdate(accounts, chainId);
-//       }
-// }
-
-
-// function onSessionUpdate(accounts, chainId) {
-//     console.log(accounts, chainId);
-// }
-
-// function onConnect(payload){
-//     console.log(payload);
-// }
-
-// function onDisconnect() {
-    
-// }
 
 //设置事件
 (function setEvent() {
@@ -298,7 +202,7 @@ async function walletConnect() {
     btns[1].onclick = function () {
         touristsConnect();
     };
-    const close = document.querySelectorAll(".close");
+    const close = document.querySelector(".close");
     close.onclick = function () {
         showOrHiddleMask(false);
     };
@@ -312,3 +216,12 @@ async function walletConnect() {
         walletConnect();
     };
 })();
+
+function walletChange(callack){
+    handleWallteChange = callack;
+}
+
+window.walletChange = walletChange;
+
+
+
